@@ -138,7 +138,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         ]
         
         # Define column widths
-        col_widths = [CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.33, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.20]
+        col_widths = [CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.35, CONTENT_BOX_WIDTH * 0.23, CONTENT_BOX_WIDTH * 0.20]
         table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
 
         # Apply styles for grid, merged cells, and alignment
