@@ -12,7 +12,6 @@ import subprocess
 import tempfile
 
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
-# Adjust the values in this list to change the height of each row in the PDF.
 ROW_HEIGHTS = [1*cm, 0.6*cm, 1.4*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
@@ -36,23 +35,48 @@ value_style = ParagraphStyle(
     alignment=TA_LEFT,
     leading=11
 )
-# This is the original style for centered values
-centered_value_style = ParagraphStyle(
-    name='CenteredValue',
-    fontName='Helvetica',
-    fontSize=9,
-    alignment=TA_CENTER,
-    leading=11
-)
-# NEW: Special style for Fixture Location and Model
 bold_centered_value_style = ParagraphStyle(
     name='BoldCenteredValue',
-    fontName='Helvetica-Bold',  # Set font to BOLD
-    fontSize=11,                # Set font size to 11
-    alignment=TA_CENTER,        # Keep alignment centered
-    leading=12                  # Adjust leading for the larger font
+    fontName='Helvetica-Bold',
+    fontSize=11,
+    alignment=TA_CENTER,
+    leading=12
 )
 
+# --- NEW FUNCTION PROVIDED BY USER ---
+def format_description_v1(desc):
+    """Format description text with dynamic font sizing based on length for v1."""
+    if not desc or not isinstance(desc, str):
+        desc = str(desc)
+    
+    # Dynamic font sizing based on description length
+    desc_length = len(desc)
+    
+    if desc_length <= 30:
+        font_size = 15
+    elif desc_length <= 50:
+        font_size = 13
+    elif desc_length <= 70:
+        font_size = 11
+    elif desc_length <= 90:
+        font_size = 10
+    else:
+        font_size = 9
+        # Truncate very long descriptions to prevent overflow
+        desc = desc[:100] + "..." if len(desc) > 100 else desc
+    
+    # Create a custom style for this description
+    desc_style_v1 = ParagraphStyle(
+        name='Description_v1',
+        fontName='Helvetica',
+        fontSize=font_size,
+        alignment=TA_LEFT,
+        leading=font_size + 2, # Adjust leading based on font size
+        spaceBefore=1,
+        spaceAfter=1
+    )
+    
+    return Paragraph(desc, desc_style_v1)
 
 def find_column(df, keywords):
     """Find a column in the DataFrame that matches any of the keywords (case-insensitive)"""
@@ -64,7 +88,7 @@ def find_column(df, keywords):
     return None
 
 def generate_final_labels(df, progress_bar=None, status_container=None):
-    """Generate final hybrid labels with bold Fixture Location and Model."""
+    """Generate final hybrid labels with dynamic description formatting."""
     
     # Identify columns from the uploaded file
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
@@ -105,17 +129,16 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         
         # Structure the data for the table
         data = [
-            # Row 1: Apply the NEW bold style to Fixture Location and Model
+            # Row 1: Bold style for Fixture Location and Model
             [Paragraph(fixture_location, bold_centered_value_style), '', Paragraph(model, bold_centered_value_style), ''],
             # Row 2: Headers and values for Part No and Qty/Veh
             [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
-            # Row 3: Header and value for Part Name
-            [Paragraph('<b>PART NAME</b>', header_style), Paragraph(part_desc, value_style), '', '']
+            # Row 3: Header and value for Part Name, using the new dynamic formatting function
+            [Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc), '', '']
         ]
         
         # Define column widths
         col_widths = [CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.33, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.20]
-        # Create the table with manually adjustable row heights
         table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
 
         # Apply styles for grid, merged cells, and alignment
@@ -125,7 +148,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
             ('LEFTPADDING', (0, 0), (-1, -1), 5),
             ('RIGHTPADDING', (0, 0), (-1, -1), 5),
             
-            # --- Cell Merging (SPAN) ---
+            # Cell Merging
             ('SPAN', (0, 0), (1, 0)),
             ('SPAN', (2, 0), (3, 0)),
             ('SPAN', (1, 2), (3, 2)),
@@ -159,12 +182,11 @@ def main():
 
     st.info("""
     **Label Logic:**
-    - **Fixture Location** and **MODEL** are now **bold** with a larger font size.
-    - **PART NO**, **QTY/VEH**, and **PART NAME** will show a header and a value.
+    - **PART NAME** value now has dynamic font size and automatic text wrapping.
+    - **Fixture Location** and **MODEL** are bold with a larger font size.
     """)
     
     st.subheader("📋 Reference Data Format")
-    st.markdown("Your file should contain columns with headers like these (case-insensitive):")
     sample_data = {
         'FIXTURE LOCATION': ['9M CSEL', '8L BSEAT'],
         'MODEL': ['3WC', '3WM'],
