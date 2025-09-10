@@ -16,7 +16,7 @@ import tempfile
 # - ROW_HEIGHTS[0]: Height for the 'Fixture Location / Model' row.
 # - ROW_HEIGHTS[1]: Height for the 'Part No / Qty/Veh' row.
 # - ROW_HEIGHTS[2]: Height for the 'Part Name' row.
-ROW_HEIGHTS = [1*cm, 1*cm, 1*cm]
+ROW_HEIGHTS = [1*cm, 0.6*cm, 1.4*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
 STICKER_WIDTH = 10 * cm
