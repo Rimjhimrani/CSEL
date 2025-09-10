@@ -24,14 +24,14 @@ CONTENT_BOX_WIDTH = 8 * cm
 header_style = ParagraphStyle(
     name='Header',
     fontName='Helvetica-Bold',
-    fontSize=9,
+    fontSize=8,
     alignment=TA_LEFT,
     leading=11
 )
 value_style = ParagraphStyle(
     name='Value',
     fontName='Helvetica',
-    fontSize=9,
+    fontSize=10,
     alignment=TA_LEFT,
     leading=11
 )
