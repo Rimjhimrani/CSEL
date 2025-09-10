@@ -170,7 +170,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         return None
 
 def main():
-    st.set_page_config(page_title="Final Label Generator", page_icon="🏷️", layout="wide")
+    st.set_page_config(page_title="CESL Label Generator", page_icon="🏷️", layout="wide")
     
     st.title("🏷️ Final Label Generator")
     st.markdown(
