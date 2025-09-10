@@ -13,9 +13,6 @@ import tempfile
 
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
 # Adjust the values in this list to change the height of each row in the PDF.
-# - ROW_HEIGHTS[0]: Height for the 'Fixture Location / Model' row.
-# - ROW_HEIGHTS[1]: Height for the 'Part No / Qty/Veh' row.
-# - ROW_HEIGHTS[2]: Height for the 'Part Name' row.
 ROW_HEIGHTS = [1*cm, 0.6*cm, 1.4*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
@@ -39,6 +36,7 @@ value_style = ParagraphStyle(
     alignment=TA_LEFT,
     leading=11
 )
+# This is the original style for centered values
 centered_value_style = ParagraphStyle(
     name='CenteredValue',
     fontName='Helvetica',
@@ -46,6 +44,15 @@ centered_value_style = ParagraphStyle(
     alignment=TA_CENTER,
     leading=11
 )
+# NEW: Special style for Fixture Location and Model
+bold_centered_value_style = ParagraphStyle(
+    name='BoldCenteredValue',
+    fontName='Helvetica-Bold',  # Set font to BOLD
+    fontSize=11,                # Set font size to 11
+    alignment=TA_CENTER,        # Keep alignment centered
+    leading=12                  # Adjust leading for the larger font
+)
+
 
 def find_column(df, keywords):
     """Find a column in the DataFrame that matches any of the keywords (case-insensitive)"""
@@ -57,7 +64,7 @@ def find_column(df, keywords):
     return None
 
 def generate_final_labels(df, progress_bar=None, status_container=None):
-    """Generate final hybrid labels with adjustable row heights and side-by-side layout."""
+    """Generate final hybrid labels with bold Fixture Location and Model."""
     
     # Identify columns from the uploaded file
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
@@ -90,16 +97,16 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         if status_container: status_container.write(f"Creating label {index + 1} of {total_rows}")
 
         # Extract data from the current row
-        fixture_location = str(row[fixture_location_col]) if fixture_location_col and fixture_location_col in row and pd.notna(row[fixture_location_col]) else ""
-        model = str(row[model_col]) if model_col and model_col in row and pd.notna(row[model_col]) else ""
-        part_no = str(row[part_no_col]) if part_no_col and part_no_col in row and pd.notna(row[part_no_col]) else ""
-        qty_veh = str(row[qty_veh_col]) if qty_veh_col and qty_veh_col in row and pd.notna(row[qty_veh_col]) else ""
-        part_desc = str(row[desc_col]) if desc_col and desc_col in row and pd.notna(row[desc_col]) else ""
-
+        fixture_location = str(row.get(fixture_location_col, ""))
+        model = str(row.get(model_col, ""))
+        part_no = str(row.get(part_no_col, ""))
+        qty_veh = str(row.get(qty_veh_col, ""))
+        part_desc = str(row.get(desc_col, ""))
+        
         # Structure the data for the table
         data = [
-            # Row 1: Values only for Fixture Location and Model
-            [Paragraph(fixture_location, centered_value_style), '', Paragraph(model, centered_value_style), ''],
+            # Row 1: Apply the NEW bold style to Fixture Location and Model
+            [Paragraph(fixture_location, bold_centered_value_style), '', Paragraph(model, bold_centered_value_style), ''],
             # Row 2: Headers and values for Part No and Qty/Veh
             [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
             # Row 3: Header and value for Part Name
@@ -119,10 +126,8 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
             ('RIGHTPADDING', (0, 0), (-1, -1), 5),
             
             # --- Cell Merging (SPAN) ---
-            # Row 1 (Fixture Location and Model values)
             ('SPAN', (0, 0), (1, 0)),
             ('SPAN', (2, 0), (3, 0)),
-            # Row 3 (Part Name value)
             ('SPAN', (1, 2), (3, 2)),
         ])
         
@@ -154,9 +159,8 @@ def main():
 
     st.info("""
     **Label Logic:**
+    - **Fixture Location** and **MODEL** are now **bold** with a larger font size.
     - **PART NO**, **QTY/VEH**, and **PART NAME** will show a header and a value.
-    - **Fixture Location** and **MODEL** will show only their values.
-    - The header for 'Part Description' from your file will be displayed as **'PART NAME'**.
     """)
     
     st.subheader("📋 Reference Data Format")
