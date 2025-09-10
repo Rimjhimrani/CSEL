@@ -24,16 +24,16 @@ CONTENT_BOX_HEIGHT = 3 * cm
 value_style = ParagraphStyle(
     name='Value',
     fontName='Helvetica',
-    fontSize=10,
-    alignment=TA_LEFT,
+    fontSize=12,
+    alignment=TA_CENTER,
     leading=12
 )
 # Style for the description, which might need more space
 desc_value_style = ParagraphStyle(
     name='DescValue',
     fontName='Helvetica',
-    fontSize=10,
-    alignment=TA_LEFT,
+    fontSize=12,
+    alignment=TA_CENTER,
     leading=12
 )
 
