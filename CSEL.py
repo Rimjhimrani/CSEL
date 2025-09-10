@@ -40,7 +40,7 @@ bold_centered_value_style = ParagraphStyle(
     fontName='Helvetica-Bold',
     fontSize=14,
     alignment=TA_CENTER,
-    leading=22
+    leading=20
 )
 
 # --- NEW FUNCTION PROVIDED BY USER ---
