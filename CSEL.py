@@ -35,14 +35,14 @@ header_style = ParagraphStyle(
 value_style = ParagraphStyle(
     name='Value',
     fontName='Helvetica',
-    fontSize=9,
+    fontSize=8,
     alignment=TA_LEFT,
     leading=11
 )
 centered_value_style = ParagraphStyle(
     name='CenteredValue',
     fontName='Helvetica',
-    fontSize=9,
+    fontSize=7,
     alignment=TA_CENTER,
     leading=11
 )
