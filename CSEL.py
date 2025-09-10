@@ -172,7 +172,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
 def main():
     st.set_page_config(page_title="CESL Label Generator", page_icon="🏷️", layout="wide")
     
-    st.title("🏷️ Final Label Generator")
+    st.title("🏷️ CESL Label Generator")
     st.markdown(
         "<p style='font-size:18px; font-style:italic; margin-top:-10px; text-align:left;'>"
         "Designed and Developed by Agilomatrix</p>",
