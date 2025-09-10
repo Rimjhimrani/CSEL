@@ -24,7 +24,7 @@ CONTENT_BOX_WIDTH = 8 * cm
 header_style = ParagraphStyle(
     name='Header',
     fontName='Helvetica-Bold',
-    fontSize=8,
+    fontSize=9,
     alignment=TA_LEFT,
     leading=11
 )
