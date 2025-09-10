@@ -20,19 +20,27 @@ STICKER_PAGESIZE = (STICKER_WIDTH, STICKER_HEIGHT)
 CONTENT_BOX_WIDTH = 8 * cm
 CONTENT_BOX_HEIGHT = 3 * cm
 
-# Define paragraph styles for headers and values
+# Define paragraph styles
 header_style = ParagraphStyle(
     name='Header',
-    fontName='Helvetica-Bold', # Bold for headers
+    fontName='Helvetica-Bold',
     fontSize=9,
     alignment=TA_LEFT,
     leading=11
 )
 value_style = ParagraphStyle(
     name='Value',
-    fontName='Helvetica', # Regular for values
+    fontName='Helvetica',
     fontSize=9,
     alignment=TA_LEFT,
+    leading=11
+)
+# Style for the values that will appear in a merged cell
+merged_value_style = ParagraphStyle(
+    name='MergedValue',
+    fontName='Helvetica',
+    fontSize=9,
+    alignment=TA_CENTER, # Center align the values that have no header
     leading=11
 )
 
@@ -45,10 +53,10 @@ def find_column(df, keywords):
                 return col
     return None
 
-def generate_labels_with_headers(df, progress_bar=None, status_container=None):
-    """Generate sticker labels with both headers and values, based on the final image layout"""
+def generate_hybrid_labels(df, progress_bar=None, status_container=None):
+    """Generate labels with headers for some fields and only values for others."""
     
-    # Identify columns from the uploaded file (case-insensitive)
+    # Identify columns from the uploaded file
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
     model_col = find_column(df, ['MODEL'])
     part_no_col = find_column(df, ['PART NO', 'PARTNO', 'PART_NO', 'PART#'])
@@ -63,7 +71,7 @@ def generate_labels_with_headers(df, progress_bar=None, status_container=None):
         status_container.write(f"- Qty/Veh: `{qty_veh_col if qty_veh_col else 'Not Found'}`")
         status_container.write(f"- Part Description: `{desc_col if desc_col else 'Not Found'}`")
 
-    # Create a temporary file to save the PDF
+    # Create a temporary file for the PDF
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
     temp_path = temp_file.name
     temp_file.close()
@@ -76,45 +84,42 @@ def generate_labels_with_headers(df, progress_bar=None, status_container=None):
     all_elements = []
     total_rows = len(df)
 
-    # Process each row in the file to create one label
     for index, row in df.iterrows():
         if progress_bar:
             progress_bar.progress((index + 1) / total_rows)
         if status_container:
             status_container.write(f"Creating label {index + 1} of {total_rows}")
 
-        # Extract data, using a blank space if a column isn't found
+        # Extract data from the row
         fixture_location = str(row[fixture_location_col]) if fixture_location_col and fixture_location_col in row and pd.notna(row[fixture_location_col]) else ""
         model = str(row[model_col]) if model_col and model_col in row and pd.notna(row[model_col]) else ""
         part_no = str(row[part_no_col]) if part_no_col and part_no_col in row and pd.notna(row[part_no_col]) else ""
         qty_veh = str(row[qty_veh_col]) if qty_veh_col and qty_veh_col in row and pd.notna(row[qty_veh_col]) else ""
         part_desc = str(row[desc_col]) if desc_col and desc_col in row and pd.notna(row[desc_col]) else ""
 
-        # Structure the data for the table with headers and values
-        # We use a nested table approach for clean separation
+        # Structure the data according to the hybrid layout
         data = [
-            # Row 1: Fixture Location and Model
-            [Paragraph('<b>Fixture Location</b>', header_style), Paragraph(fixture_location, value_style), Paragraph('<b>MODEL</b>', header_style), Paragraph(model, value_style)],
-            # Row 2: Part No and Qty/Veh
+            # Row 1: Fixture Location and Model (Values only)
+            [Paragraph(fixture_location, merged_value_style), '', Paragraph(model, merged_value_style), ''],
+            # Row 2: Part No and Qty/Veh (Headers and Values)
             [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
-            # Row 3: Part Description Header
-            [Paragraph('<b>PART DESCRIPTION</b>', header_style), '', '', ''],
-            # Row 4: Part Description Value
+            # Row 3: Part Description (Value only)
             [Paragraph(part_desc, value_style), '', '', '']
         ]
         
-        # Define column widths to match the layout
+        # Define column widths
         col_widths = [CONTENT_BOX_WIDTH * 0.28, CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.28]
         table = Table(data, colWidths=col_widths)
 
-        # Apply styles for grid, merged cells, and padding
+        # Apply styles for grid and merged cells
         style = TableStyle([
-            # Grid lines for all cells
+            # Grid lines
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
             
-            # Merge cells for the Part Description header and value
-            ('SPAN', (0, 2), (3, 2)),  # Span for "PART DESCRIPTION" header
-            ('SPAN', (0, 3), (3, 3)),  # Span for the description value
+            # Cell Merging
+            ('SPAN', (0, 0), (1, 0)),  # Merge cells for Fixture Location value
+            ('SPAN', (2, 0), (3, 0)),  # Merge cells for Model value
+            ('SPAN', (0, 2), (3, 2)),  # Merge cells for Part Description value
             
             # Alignment and padding
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -127,11 +132,10 @@ def generate_labels_with_headers(df, progress_bar=None, status_container=None):
         table.setStyle(style)
         all_elements.append(table)
 
-        # Add a page break after each label (except the last one)
         if index < total_rows - 1:
             all_elements.append(PageBreak())
 
-    # Build the final PDF
+    # Build the PDF
     try:
         doc.build(all_elements)
         if status_container:
@@ -144,12 +148,12 @@ def generate_labels_with_headers(df, progress_bar=None, status_container=None):
 
 def main():
     st.set_page_config(
-        page_title="Label Generator",
+        page_title="Hybrid Label Generator",
         page_icon="🏷️",
         layout="wide"
     )
     
-    st.title("🏷️ Label Generator (With Headers)")
+    st.title("🏷️ Hybrid Label Generator")
     st.markdown(
         "<p style='font-size:18px; font-style:italic; margin-top:-10px; text-align:left;'>"
         "Designed and Developed by Agilomatrix</p>",
@@ -158,11 +162,13 @@ def main():
 
     st.markdown("---")
 
-    st.info("👈 Upload an Excel or CSV file to generate labels with headers and values.")
+    st.info("""
+    **How it works:**
+    - Headers for **PART NO** and **QTY/VEH** will be displayed.
+    - Only the values for **Fixture Location**, **MODEL**, and **PART DESCRIPTION** will be displayed.
+    """)
     
-    # Show the expected data format
     st.subheader("📋 Reference Data Format")
-    st.markdown("Your file should contain columns with headers like these (case-insensitive):")
     sample_data = {
         'FIXTURE LOCATION': ['9M CSEL', '8L BSEAT', '7K FRAME'],
         'MODEL': ['3WC', '3WM', '3WS'],
@@ -170,25 +176,21 @@ def main():
         'QTY/VEH': [2, 1, 4],
         'PART DESCRIPTION': ['BELLOW ASSY. WITH RETAINING CLIP', 'GUARD RING (hirkesh)', 'GUARD RING SEAL (hirkesh)']
     }
-    
     sample_df = pd.DataFrame(sample_data)
     st.dataframe(sample_df, use_container_width=True)
 
     st.markdown("---")
         
-    # Sidebar for file upload
     with st.sidebar:
         st.header("📁 File Upload")
         uploaded_file = st.file_uploader(
             "Choose Excel or CSV file",
             type=['xlsx', 'xls', 'csv'],
-            help="Upload the file containing data for your labels."
+            help="Upload your data file."
         )
-        
         if uploaded_file:
             st.success(f"File uploaded: {uploaded_file.name}")
     
-    # Main content area
     if uploaded_file is not None:
         try:
             if uploaded_file.name.lower().endswith('.csv'):
@@ -204,12 +206,11 @@ def main():
                     progress_bar = st.progress(0)
                     status_container = st.empty()
                     
-                    pdf_path = generate_labels_with_headers(df, progress_bar, status_container)
+                    pdf_path = generate_hybrid_labels(df, progress_bar, status_container)
                     
                     if pdf_path:
                         with open(pdf_path, 'rb') as pdf_file:
                             pdf_data = pdf_file.read()
-                        
                         os.unlink(pdf_path)
                         
                         st.download_button(
@@ -224,7 +225,7 @@ def main():
                         st.error("❌ Failed to generate labels.")
                         
         except Exception as e:
-            st.error(f"An error occurred while processing the file: {str(e)}")
+            st.error(f"An error occurred: {str(e)}")
 
 if __name__ == "__main__":
     main()
