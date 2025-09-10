@@ -38,7 +38,7 @@ value_style = ParagraphStyle(
 bold_centered_value_style = ParagraphStyle(
     name='BoldCenteredValue',
     fontName='Helvetica-Bold',
-    fontSize=14,
+    fontSize=12,
     alignment=TA_CENTER,
     leading=12
 )
@@ -53,11 +53,11 @@ def format_description_v1(desc):
     desc_length = len(desc)
     
     if desc_length <= 30:
-        font_size = 15
+        font_size = 10
     elif desc_length <= 50:
-        font_size = 13
+        font_size = 10
     elif desc_length <= 70:
-        font_size = 11
+        font_size = 10
     elif desc_length <= 90:
         font_size = 10
     else:
