@@ -28,21 +28,21 @@ CONTENT_BOX_WIDTH = 8 * cm
 header_style = ParagraphStyle(
     name='Header',
     fontName='Helvetica-Bold',
-    fontSize=9,
+    fontSize=8,
     alignment=TA_LEFT,
     leading=11
 )
 value_style = ParagraphStyle(
     name='Value',
     fontName='Helvetica',
-    fontSize=8,
+    fontSize=9,
     alignment=TA_LEFT,
     leading=11
 )
 centered_value_style = ParagraphStyle(
     name='CenteredValue',
     fontName='Helvetica',
-    fontSize=7,
+    fontSize=9,
     alignment=TA_CENTER,
     leading=11
 )
