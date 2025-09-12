@@ -12,13 +12,13 @@ import subprocess
 import tempfile
 
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
-ROW_HEIGHTS = [1*cm, 0.6*cm, 1.4*cm]
+ROW_HEIGHTS = [1.5*cm, 1*cm, 2.5*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
 STICKER_WIDTH = 10 * cm
 STICKER_HEIGHT = 15 * cm
 STICKER_PAGESIZE = (STICKER_WIDTH, STICKER_HEIGHT)
-CONTENT_BOX_WIDTH = 8 * cm
+CONTENT_BOX_WIDTH = 9.8 * cm
 
 # --- PARAGRAPH STYLES ---
 header_style = ParagraphStyle(
