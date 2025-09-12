@@ -93,6 +93,10 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
     # Identify columns from the uploaded file
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
     model_col = find_column(df, ['MODEL'])
+    # --- MODIFICATION START ---
+    # Added search for 'STRUCTURE' column
+    structure_col = find_column(df, ['STRUCTURE'])
+    # --- MODIFICATION END ---
     part_no_col = find_column(df, ['PART NO', 'PARTNO', 'PART_NO', 'PART#'])
     qty_veh_col = find_column(df, ['QTY/VEH', 'QTY_VEH', 'QTY/BIN', 'QTY'])
     desc_col = find_column(df, ['PART DESC', 'PART_DESCRIPTION', 'DESC', 'DESCRIPTION', 'PART NAME'])
@@ -101,6 +105,10 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         status_container.write("**Attempting to map columns from your file:**")
         status_container.write(f"- For Fixture Location: `{fixture_location_col if fixture_location_col else 'Not Found'}`")
         status_container.write(f"- For Model: `{model_col if model_col else 'Not Found'}`")
+        # --- MODIFICATION START ---
+        # Added status message for the new 'STRUCTURE' column
+        status_container.write(f"- For Structure: `{structure_col if structure_col else 'Not Found'}`")
+        # --- MODIFICATION END ---
         status_container.write(f"- For Part No: `{part_no_col if part_no_col else 'Not Found'}`")
         status_container.write(f"- For Qty/Veh: `{qty_veh_col if qty_veh_col else 'Not Found'}`")
         status_container.write(f"- For Part Name (looks for 'Part Description'): `{desc_col if desc_col else 'Not Found'}`")
@@ -123,25 +131,33 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         # Extract data from the current row
         fixture_location = str(row.get(fixture_location_col, ""))
         model = str(row.get(model_col, ""))
+        # --- MODIFICATION START ---
+        # Extract data for the new 'STRUCTURE' column
+        structure = str(row.get(structure_col, ""))
+        # --- MODIFICATION END ---
         part_no = str(row.get(part_no_col, ""))
         qty_veh = str(row.get(qty_veh_col, ""))
         part_desc = str(row.get(desc_col, ""))
         
-        # Structure the data for the table
+        # --- MODIFICATION START ---
+        # Structure the data for the table, with the updated first row
         data = [
-            # Row 1: Bold style for Fixture Location and Model
-            [Paragraph(fixture_location, bold_centered_value_style), '', Paragraph(model, bold_centered_value_style), ''],
+            # Row 1: Three columns for Fixture Location, Model, and Structure
+            [Paragraph(fixture_location, bold_centered_value_style), Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), ''],
             # Row 2: Headers and values for Part No and Qty/Veh
             [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
             # Row 3: Header and value for Part Name, using the new dynamic formatting function
             [Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc), '', '']
         ]
+        # --- MODIFICATION END ---
         
         # Define column widths
-        col_widths = [CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.35, CONTENT_BOX_WIDTH * 0.23, CONTENT_BOX_WIDTH * 0.20]
+        col_widths = [CONTENT_BOX_WIDTH * 0.33, CONTENT_BOX_WIDTH * 0.33, CONTENT_BOX_WIDTH * 0.17, CONTENT_BOX_WIDTH * 0.17]
         table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
 
         # Apply styles for grid, merged cells, and alignment
+        # --- MODIFICATION START ---
+        # Updated cell merging to create three columns in the first row
         style = TableStyle([
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -149,10 +165,12 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
             ('RIGHTPADDING', (0, 0), (-1, -1), 5),
             
             # Cell Merging
-            ('SPAN', (0, 0), (1, 0)),
+            # Merge the last two cells of the first row for the 'Structure' value
             ('SPAN', (2, 0), (3, 0)),
+            # Merge for the Part Name value
             ('SPAN', (1, 2), (3, 2)),
         ])
+        # --- MODIFICATION END ---
         
         table.setStyle(style)
         all_elements.append(table)
@@ -183,17 +201,21 @@ def main():
     st.info("""
     **Label Logic:**
     - **PART NAME** value now has dynamic font size and automatic text wrapping.
-    - **Fixture Location** and **MODEL** are bold with a larger font size.
+    - **Fixture Location**, **MODEL**, and **STRUCTURE** are bold with a larger font size in the top row.
     """)
     
     st.subheader("📋 Reference Data Format")
+    # --- MODIFICATION START ---
+    # Added 'STRUCTURE' to the sample data
     sample_data = {
         'FIXTURE LOCATION': ['9M CSEL', '8L BSEAT'],
         'MODEL': ['3WC', '3WM'],
+        'STRUCTURE': ['S-A', 'S-B'],
         'PART NO': ['08-DRA-14-02', 'P0012124-07'],
         'QTY/VEH': [2, 1],
         'PART DESCRIPTION': ['BELLOW ASSY. WITH RETAINING CLIP', 'GUARD RING (hirkesh)']
     }
+    # --- MODIFICATION END ---
     st.dataframe(pd.DataFrame(sample_data), use_container_width=True)
     st.markdown("---")
         
