@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
-ROW_HEIGHTS = [1.5*cm, 1*cm, 2.5*cm]
+ROW_HEIGHTS = [1.5*cm, 1.5*cm, 2.0*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
 STICKER_WIDTH = 10 * cm
