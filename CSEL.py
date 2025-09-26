@@ -32,7 +32,7 @@ value_style = ParagraphStyle(
     name='Value',
     fontName='Helvetica',
     fontSize=13,
-    alignment=TA_LEFT,
+    alignment=TA_CENTER,
     leading=14
 )
 bold_centered_value_style = ParagraphStyle(
