@@ -124,36 +124,38 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         qty_veh = str(row.get(qty_veh_col, ""))
         part_desc = str(row.get(desc_col, ""))
         
-        # --- MODIFICATION START: Nested Table Structure ---
+        # --- MODIFICATION START: Updated Table Styling ---
 
         # --- TABLE FOR ROW 1 (Model, Structure, etc.) ---
         data_r1 = [[Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)]]
-        # Define column widths for the FIRST row
         col_widths_r1 = [CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25]
         table_r1 = Table(data_r1, colWidths=col_widths_r1, rowHeights=ROW_HEIGHTS[0])
-        table_r1.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+        # Use 'GRID' to draw all lines for this table
+        table_r1.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
         # --- TABLE FOR ROW 2 (Part No, Qty/Veh) ---
         data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nVEH</b>', header_style), Paragraph(qty_veh, value_style)]]
-        # Define column widths for the SECOND row
         col_widths_r2 = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.43, CONTENT_BOX_WIDTH * 0.15, CONTENT_BOX_WIDTH * 0.20]
         table_r2 = Table(data_r2, colWidths=col_widths_r2, rowHeights=ROW_HEIGHTS[1])
-        table_r2.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+        # Use 'GRID' to draw all lines for this table
+        table_r2.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
         # --- TABLE FOR ROW 3 (Part Name) ---
         data_r3 = [[Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc)]]
-        # Define column widths for the THIRD row
         col_widths_r3 = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.80] 
         table_r3 = Table(data_r3, colWidths=col_widths_r3, rowHeights=ROW_HEIGHTS[2])
-        table_r3.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+        # Use 'GRID' to draw all lines for this table
+        table_r3.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
         # --- CONTAINER TABLE (to hold the 3 rows together) ---
         container_data = [[table_r1], [table_r2], [table_r3]]
         container_table = Table(container_data, colWidths=[CONTENT_BOX_WIDTH])
+        # Remove all padding from the container so the inner tables touch
         container_table.setStyle(TableStyle([
-            ('BOX', (0, 0), (-1, -1), 1, colors.black), # Draws the outer border
-            ('LINEABOVE', (0, 1), (0, 1), 1, colors.black), # Draws the line between row 1 and 2
-            ('LINEABOVE', (0, 2), (0, 2), 1, colors.black), # Draws the line between row 2 and 3
+            ('LEFTPADDING', (0,0), (-1,-1), 0),
+            ('RIGHTPADDING', (0,0), (-1,-1), 0),
+            ('TOPPADDING', (0,0), (-1,-1), 0),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ]))
         
         all_elements.append(container_table)
