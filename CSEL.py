@@ -60,13 +60,13 @@ def format_description_v1(desc):
     desc_length = len(desc)
     
     if desc_length <= 30:
-        font_size = 8
+        font_size = 9
     elif desc_length <= 50:
-        font_size = 8
+        font_size = 9
     elif desc_length <= 70:
-        font_size = 8
+        font_size = 9
     elif desc_length <= 90:
-        font_size = 8
+        font_size = 9
     else:
         font_size = 8
         # Truncate very long descriptions to prevent overflow
