@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
-ROW_HEIGHTS = [1.5*cm, 1.5*cm, 2.0*cm]
+ROW_HEIGHTS = [1.5*cm, 1*cm, 2.5*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
 STICKER_WIDTH = 10 * cm
@@ -93,9 +93,9 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
     # Identify columns from the uploaded file
     model_col = find_column(df, ['MODEL'])
     # --- MODIFICATION START ---
-    # Added search for 'STRUCTURE' and 'STATION NAME' columns
+    # Updated search for 'STATION NO'
     structure_col = find_column(df, ['STRUCTURE'])
-    station_name_col = find_column(df, ['STATION NAME', 'STATION_NAME', 'STATION'])
+    station_no_col = find_column(df, ['STATION NO', 'STATION_NO', 'STATION'])
     # --- MODIFICATION END ---
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
     part_no_col = find_column(df, ['PART NO', 'PARTNO', 'PART_NO', 'PART#'])
@@ -106,9 +106,9 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         status_container.write("**Attempting to map columns from your file:**")
         status_container.write(f"- For Model: `{model_col if model_col else 'Not Found'}`")
         # --- MODIFICATION START ---
-        # Added status message for the new columns
+        # Updated status message for 'Station No'
         status_container.write(f"- For Structure: `{structure_col if structure_col else 'Not Found'}`")
-        status_container.write(f"- For Station Name: `{station_name_col if station_name_col else 'Not Found'}`")
+        status_container.write(f"- For Station No: `{station_no_col if station_no_col else 'Not Found'}`")
         # --- MODIFICATION END ---
         status_container.write(f"- For Fixture Location: `{fixture_location_col if fixture_location_col else 'Not Found'}`")
         status_container.write(f"- For Part No: `{part_no_col if part_no_col else 'Not Found'}`")
@@ -133,9 +133,9 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         # Extract data from the current row
         model = str(row.get(model_col, ""))
         # --- MODIFICATION START ---
-        # Extract data for the new columns
+        # Extract data for the 'Structure' and 'Station No' columns
         structure = str(row.get(structure_col, ""))
-        station_name = str(row.get(station_name_col, ""))
+        station_no = str(row.get(station_no_col, ""))
         # --- MODIFICATION END ---
         fixture_location = str(row.get(fixture_location_col, ""))
         part_no = str(row.get(part_no_col, ""))
@@ -143,10 +143,10 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         part_desc = str(row.get(desc_col, ""))
         
         # --- MODIFICATION START ---
-        # Structure the data for the table, with the updated first row having 4 columns
+        # Structure the data for the table, with the updated first row
         data = [
-            # Row 1: Four columns for Model, Structure, Station Name, and Fixture Location
-            [Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_name, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)],
+            # Row 1: Four columns for Model, Structure, Station No, and Fixture Location
+            [Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)],
             # Row 2: Headers and values for Part No and Qty/Veh
             [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
             # Row 3: Header and value for Part Name
@@ -154,15 +154,11 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         ]
         # --- MODIFICATION END ---
         
-        # --- MODIFICATION START ---
         # Adjusted column widths for a 4-column top row
         col_widths = [CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25]
-        # --- MODIFICATION END ---
         table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
 
         # Apply styles for grid, merged cells, and alignment
-        # --- MODIFICATION START ---
-        # Updated cell merging: removed the span on the first row
         style = TableStyle([
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -173,7 +169,6 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
             # Merge for the Part Name value (spans 3 columns)
             ('SPAN', (1, 2), (3, 2)),
         ])
-        # --- MODIFICATION END ---
         
         table.setStyle(style)
         all_elements.append(table)
@@ -203,17 +198,17 @@ def main():
 
     st.info("""
     **Label Logic:**
-    - The top row now displays **Model**, **Structure**, **Station Name**, and **Fixture Location**. All are bold with a larger font size.
+    - The top row now displays **Model**, **Structure**, **Station No**, and **Fixture Location**. All are bold with a larger font size.
     - **PART NAME** value continues to have dynamic font size and automatic text wrapping.
     """)
     
     st.subheader("📋 Reference Data Format")
     # --- MODIFICATION START ---
-    # Added 'STATION NAME' to the sample data and reordered for clarity
+    # Updated 'STATION NAME' to 'STATION NO' in the sample data
     sample_data = {
         'MODEL': ['3WC', '3WM'],
         'STRUCTURE': ['S-A', 'S-B'],
-        'STATION NAME': ['STN-1', 'STN-2'],
+        'STATION NO': ['STN-1', 'STN-2'],
         'FIXTURE LOCATION': ['9M CSEL', '8L BSEAT'],
         'PART NO': ['08-DRA-14-02', 'P0012124-07'],
         'QTY/VEH': [2, 1],
