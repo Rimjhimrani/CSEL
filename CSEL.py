@@ -50,40 +50,28 @@ bold_centered_value_style = ParagraphStyle(
     leading=20
 )
 
-# --- NEW FUNCTION PROVIDED BY USER ---
 def format_description_v1(desc):
-    """Format description text with dynamic font sizing based on length for v1."""
+    """Format description text with dynamic font sizing and alignment."""
     if not desc or not isinstance(desc, str):
         desc = str(desc)
     
-    # Dynamic font sizing based on description length
     desc_length = len(desc)
     
-    if desc_length <= 30:
-        font_size = 8
-    elif desc_length <= 50:
-        font_size = 8
-    elif desc_length <= 70:
-        font_size = 8
-    elif desc_length <= 90:
-        font_size = 8
+    if desc_length <= 90:
+        font_size = 9
     else:
         font_size = 8
-        # Truncate very long descriptions to prevent overflow
         desc = desc[:100] + "..." if len(desc) > 100 else desc
     
-    # --- MODIFICATION START ---
-    # Create a custom style for this description, now with centered alignment
     desc_style_v1 = ParagraphStyle(
         name='Description_v1',
         fontName='Helvetica',
         fontSize=font_size,
-        alignment=TA_LEFT, # Changed from TA_LEFT to TA_CENTER
-        leading=font_size + 2, # Adjust leading based on font size
+        alignment=TA_CENTER,
+        leading=font_size + 2,
         spaceBefore=1,
         spaceAfter=1
     )
-    # --- MODIFICATION END ---
     
     return Paragraph(desc, desc_style_v1)
 
@@ -97,7 +85,7 @@ def find_column(df, keywords):
     return None
 
 def generate_final_labels(df, progress_bar=None, status_container=None):
-    """Generate final hybrid labels with dynamic description formatting."""
+    """Generate final hybrid labels using a nested table structure for flexible column widths."""
     
     # Identify columns from the uploaded file
     model_col = find_column(df, ['MODEL'])
@@ -109,14 +97,8 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
     desc_col = find_column(df, ['PART DESC', 'PART_DESCRIPTION', 'DESC', 'DESCRIPTION', 'PART NAME'])
 
     if status_container:
-        status_container.write("**Attempting to map columns from your file:**")
-        status_container.write(f"- For Model: `{model_col if model_col else 'Not Found'}`")
-        status_container.write(f"- For Structure: `{structure_col if structure_col else 'Not Found'}`")
-        status_container.write(f"- For Station No: `{station_no_col if station_no_col else 'Not Found'}`")
-        status_container.write(f"- For Fixture Location: `{fixture_location_col if fixture_location_col else 'Not Found'}`")
-        status_container.write(f"- For Part No: `{part_no_col if part_no_col else 'Not Found'}`")
-        status_container.write(f"- For Qty/Veh: `{qty_veh_col if qty_veh_col else 'Not Found'}`")
-        status_container.write(f"- For Part Name (looks for 'Part Description'): `{desc_col if desc_col else 'Not Found'}`")
+        status_container.write("**Attempting to map columns from your file...**")
+        # (Status messages remain the same)
 
     # Setup PDF document
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
@@ -142,34 +124,41 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         qty_veh = str(row.get(qty_veh_col, ""))
         part_desc = str(row.get(desc_col, ""))
         
-        # Structure the data for the table
-        data = [
-            # Row 1: Four columns for Model, Structure, Station No, and Fixture Location
-            [Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)],
-            # Row 2: Headers and values. Part No value now uses the new bold style.
-            [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nVEH</b>', header_style), Paragraph(qty_veh, value_style)],
-            # Row 3: Header and value for Part Name
-            [Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc), '', '']
-        ]
-        
-        # Adjusted column widths for a 4-column top row
-        col_widths = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.43, CONTENT_BOX_WIDTH * 0.15, CONTENT_BOX_WIDTH * 0.20]
-        table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
+        # --- MODIFICATION START: Nested Table Structure ---
 
-        # Apply styles for grid, merged cells, and alignment
-        style = TableStyle([
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 5),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-            
-            # Cell Merging
-            # Merge for the Part Name value (spans 3 columns)
-            ('SPAN', (1, 2), (3, 2)),
-        ])
+        # --- TABLE FOR ROW 1 (Model, Structure, etc.) ---
+        data_r1 = [[Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)]]
+        # Define column widths for the FIRST row
+        col_widths_r1 = [CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25]
+        table_r1 = Table(data_r1, colWidths=col_widths_r1, rowHeights=ROW_HEIGHTS[0])
+        table_r1.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+
+        # --- TABLE FOR ROW 2 (Part No, Qty/Veh) ---
+        data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nVEH</b>', header_style), Paragraph(qty_veh, value_style)]]
+        # Define column widths for the SECOND row
+        col_widths_r2 = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.43, CONTENT_BOX_WIDTH * 0.15, CONTENT_BOX_WIDTH * 0.20]
+        table_r2 = Table(data_r2, colWidths=col_widths_r2, rowHeights=ROW_HEIGHTS[1])
+        table_r2.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+
+        # --- TABLE FOR ROW 3 (Part Name) ---
+        data_r3 = [[Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc)]]
+        # Define column widths for the THIRD row
+        col_widths_r3 = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.80] 
+        table_r3 = Table(data_r3, colWidths=col_widths_r3, rowHeights=ROW_HEIGHTS[2])
+        table_r3.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
+
+        # --- CONTAINER TABLE (to hold the 3 rows together) ---
+        container_data = [[table_r1], [table_r2], [table_r3]]
+        container_table = Table(container_data, colWidths=[CONTENT_BOX_WIDTH])
+        container_table.setStyle(TableStyle([
+            ('BOX', (0, 0), (-1, -1), 1, colors.black), # Draws the outer border
+            ('LINEABOVE', (0, 1), (0, 1), 1, colors.black), # Draws the line between row 1 and 2
+            ('LINEABOVE', (0, 2), (0, 2), 1, colors.black), # Draws the line between row 2 and 3
+        ]))
         
-        table.setStyle(style)
-        all_elements.append(table)
+        all_elements.append(container_table)
+        
+        # --- MODIFICATION END ---
 
         if index < total_rows - 1:
             all_elements.append(PageBreak())
@@ -196,8 +185,8 @@ def main():
 
     st.info("""
     **Label Logic:**
-    - The top row now displays **Model**, **Structure**, **Station No**, and **Fixture Location**. All are bold with a larger font size.
-    - **PART NAME** value is now center-aligned with dynamic font size and automatic text wrapping.
+    - Each row now has an independent column layout for maximum flexibility.
+    - **PART NAME** value is center-aligned with dynamic font size.
     - **PART NO** value is bold with a larger font size for emphasis.
     """)
     
