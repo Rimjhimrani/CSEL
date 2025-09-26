@@ -35,8 +35,6 @@ value_style = ParagraphStyle(
     alignment=TA_CENTER,
     leading=14
 )
-# --- MODIFICATION START ---
-# Added a new style specifically for the bold Part No value
 bold_value_style = ParagraphStyle(
     name='BoldValue',
     fontName='Helvetica-Bold', # Use bold font
@@ -44,7 +42,6 @@ bold_value_style = ParagraphStyle(
     alignment=TA_CENTER,
     leading=17
 )
-# --- MODIFICATION END ---
 bold_centered_value_style = ParagraphStyle(
     name='BoldCenteredValue',
     fontName='Helvetica-Bold',
@@ -75,16 +72,18 @@ def format_description_v1(desc):
         # Truncate very long descriptions to prevent overflow
         desc = desc[:100] + "..." if len(desc) > 100 else desc
     
-    # Create a custom style for this description
+    # --- MODIFICATION START ---
+    # Create a custom style for this description, now with centered alignment
     desc_style_v1 = ParagraphStyle(
         name='Description_v1',
         fontName='Helvetica',
         fontSize=font_size,
-        alignment=TA_LEFT,
+        alignment=TA_CENTER, # Changed from TA_LEFT to TA_CENTER
         leading=font_size + 2, # Adjust leading based on font size
         spaceBefore=1,
         spaceAfter=1
     )
+    # --- MODIFICATION END ---
     
     return Paragraph(desc, desc_style_v1)
 
@@ -147,10 +146,8 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         data = [
             # Row 1: Four columns for Model, Structure, Station No, and Fixture Location
             [Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)],
-            # --- MODIFICATION START ---
             # Row 2: Headers and values. Part No value now uses the new bold style.
             [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nVEH</b>', header_style), Paragraph(qty_veh, value_style)],
-            # --- MODIFICATION END ---
             # Row 3: Header and value for Part Name
             [Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc), '', '']
         ]
@@ -200,8 +197,8 @@ def main():
     st.info("""
     **Label Logic:**
     - The top row now displays **Model**, **Structure**, **Station No**, and **Fixture Location**. All are bold with a larger font size.
-    - **PART NAME** value continues to have dynamic font size and automatic text wrapping.
-    - **PART NO** value is now bold for emphasis.
+    - **PART NAME** value is now center-aligned with dynamic font size and automatic text wrapping.
+    - **PART NO** value is bold with a larger font size for emphasis.
     """)
     
     st.subheader("📋 Reference Data Format")
