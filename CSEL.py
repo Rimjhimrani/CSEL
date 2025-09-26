@@ -40,7 +40,7 @@ value_style = ParagraphStyle(
 bold_value_style = ParagraphStyle(
     name='BoldValue',
     fontName='Helvetica-Bold', # Use bold font
-    fontSize=13,
+    fontSize=14,
     alignment=TA_CENTER,
     leading=14
 )
@@ -156,7 +156,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         ]
         
         # Adjusted column widths for a 4-column top row
-        col_widths = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.36, CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.22]
+        col_widths = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.38, CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.22]
         table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
 
         # Apply styles for grid, merged cells, and alignment
