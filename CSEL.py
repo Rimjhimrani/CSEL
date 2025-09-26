@@ -31,7 +31,7 @@ header_style = ParagraphStyle(
 value_style = ParagraphStyle(
     name='Value',
     fontName='Helvetica',
-    fontSize=12,
+    fontSize=13,
     alignment=TA_LEFT,
     leading=13
 )
