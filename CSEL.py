@@ -35,6 +35,16 @@ value_style = ParagraphStyle(
     alignment=TA_CENTER,
     leading=14
 )
+# --- MODIFICATION START ---
+# Added a new style specifically for the bold Part No value
+bold_value_style = ParagraphStyle(
+    name='BoldValue',
+    fontName='Helvetica-Bold', # Use bold font
+    fontSize=13,
+    alignment=TA_CENTER,
+    leading=14
+)
+# --- MODIFICATION END ---
 bold_centered_value_style = ParagraphStyle(
     name='BoldCenteredValue',
     fontName='Helvetica-Bold',
@@ -92,11 +102,8 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
     
     # Identify columns from the uploaded file
     model_col = find_column(df, ['MODEL'])
-    # --- MODIFICATION START ---
-    # Updated search for 'STATION NO'
     structure_col = find_column(df, ['STRUCTURE'])
     station_no_col = find_column(df, ['STATION NO', 'STATION_NO', 'STATION'])
-    # --- MODIFICATION END ---
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
     part_no_col = find_column(df, ['PART NO', 'PARTNO', 'PART_NO', 'PART#'])
     qty_veh_col = find_column(df, ['QTY/VEH', 'QTY_VEH', 'QTY/BIN', 'QTY'])
@@ -105,11 +112,8 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
     if status_container:
         status_container.write("**Attempting to map columns from your file:**")
         status_container.write(f"- For Model: `{model_col if model_col else 'Not Found'}`")
-        # --- MODIFICATION START ---
-        # Updated status message for 'Station No'
         status_container.write(f"- For Structure: `{structure_col if structure_col else 'Not Found'}`")
         status_container.write(f"- For Station No: `{station_no_col if station_no_col else 'Not Found'}`")
-        # --- MODIFICATION END ---
         status_container.write(f"- For Fixture Location: `{fixture_location_col if fixture_location_col else 'Not Found'}`")
         status_container.write(f"- For Part No: `{part_no_col if part_no_col else 'Not Found'}`")
         status_container.write(f"- For Qty/Veh: `{qty_veh_col if qty_veh_col else 'Not Found'}`")
@@ -132,27 +136,24 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
 
         # Extract data from the current row
         model = str(row.get(model_col, ""))
-        # --- MODIFICATION START ---
-        # Extract data for the 'Structure' and 'Station No' columns
         structure = str(row.get(structure_col, ""))
         station_no = str(row.get(station_no_col, ""))
-        # --- MODIFICATION END ---
         fixture_location = str(row.get(fixture_location_col, ""))
         part_no = str(row.get(part_no_col, ""))
         qty_veh = str(row.get(qty_veh_col, ""))
         part_desc = str(row.get(desc_col, ""))
         
-        # --- MODIFICATION START ---
-        # Structure the data for the table, with the updated first row
+        # Structure the data for the table
         data = [
             # Row 1: Four columns for Model, Structure, Station No, and Fixture Location
             [Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)],
-            # Row 2: Headers and values for Part No and Qty/Veh
-            [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
+            # --- MODIFICATION START ---
+            # Row 2: Headers and values. Part No value now uses the new bold style.
+            [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
+            # --- MODIFICATION END ---
             # Row 3: Header and value for Part Name
             [Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc), '', '']
         ]
-        # --- MODIFICATION END ---
         
         # Adjusted column widths for a 4-column top row
         col_widths = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.36, CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.22]
@@ -200,11 +201,10 @@ def main():
     **Label Logic:**
     - The top row now displays **Model**, **Structure**, **Station No**, and **Fixture Location**. All are bold with a larger font size.
     - **PART NAME** value continues to have dynamic font size and automatic text wrapping.
+    - **PART NO** value is now bold for emphasis.
     """)
     
     st.subheader("📋 Reference Data Format")
-    # --- MODIFICATION START ---
-    # Updated 'STATION NAME' to 'STATION NO' in the sample data
     sample_data = {
         'MODEL': ['3WC', '3WM'],
         'STRUCTURE': ['S-A', 'S-B'],
@@ -214,7 +214,6 @@ def main():
         'QTY/VEH': [2, 1],
         'PART DESCRIPTION': ['BELLOW ASSY. WITH RETAINING CLIP', 'GUARD RING (hirkesh)']
     }
-    # --- MODIFICATION END ---
     st.dataframe(pd.DataFrame(sample_data), use_container_width=True)
     st.markdown("---")
         
