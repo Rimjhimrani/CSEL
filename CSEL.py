@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
-ROW_HEIGHTS = [1.5*cm, 1*cm, 2.5*cm]
+ROW_HEIGHTS = [1.5*cm, 1.5*cm, 2*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
 STICKER_WIDTH = 10 * cm
@@ -155,7 +155,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         # --- MODIFICATION END ---
         
         # Adjusted column widths for a 4-column top row
-        col_widths = [CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.25]
+        col_widths = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.40, CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.20]
         table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
 
         # Apply styles for grid, merged cells, and alignment
