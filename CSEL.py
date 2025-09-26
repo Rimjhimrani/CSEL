@@ -156,7 +156,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         ]
         
         # Adjusted column widths for a 4-column top row
-        col_widths = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.38, CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.22]
+        col_widths = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.40, CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.22]
         table = Table(data, colWidths=col_widths, rowHeights=ROW_HEIGHTS)
 
         # Apply styles for grid, merged cells, and alignment
