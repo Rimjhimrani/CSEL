@@ -149,7 +149,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
             [Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)],
             # --- MODIFICATION START ---
             # Row 2: Headers and values. Part No value now uses the new bold style.
-            [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/VEH</b>', header_style), Paragraph(qty_veh, value_style)],
+            [Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nVEH</b>', header_style), Paragraph(qty_veh, value_style)],
             # --- MODIFICATION END ---
             # Row 3: Header and value for Part Name
             [Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc), '', '']
