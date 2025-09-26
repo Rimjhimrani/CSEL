@@ -135,14 +135,14 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
 
         # --- TABLE FOR ROW 2 (Part No, Qty/Veh) ---
         data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nVEH</b>', header_style), Paragraph(qty_veh, value_style)]]
-        col_widths_r2 = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.45, CONTENT_BOX_WIDTH * 0.17, CONTENT_BOX_WIDTH * 0.18]
+        col_widths_r2 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.47, CONTENT_BOX_WIDTH * 0.17, CONTENT_BOX_WIDTH * 0.18]
         table_r2 = Table(data_r2, colWidths=col_widths_r2, rowHeights=ROW_HEIGHTS[1])
         # Use 'GRID' to draw all lines for this table
         table_r2.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
         # --- TABLE FOR ROW 3 (Part Name) ---
         data_r3 = [[Paragraph('<b>PART NAME</b>', header_style), format_description_v1(part_desc)]]
-        col_widths_r3 = [CONTENT_BOX_WIDTH * 0.20, CONTENT_BOX_WIDTH * 0.80] 
+        col_widths_r3 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.82] 
         table_r3 = Table(data_r3, colWidths=col_widths_r3, rowHeights=ROW_HEIGHTS[2])
         # Use 'GRID' to draw all lines for this table
         table_r3.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
