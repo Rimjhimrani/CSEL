@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
-ROW_HEIGHTS = [1.5*cm, 1.5*cm, 2*cm]
+ROW_HEIGHTS = [1.6*cm, 1.6*cm, 1.8*cm]
 
 # --- STICKER AND CONTENT DIMENSIONS ---
 STICKER_WIDTH = 10 * cm
@@ -53,15 +53,15 @@ def format_description_v1(desc):
     desc_length = len(desc)
     
     if desc_length <= 30:
-        font_size = 10
-    elif desc_length <= 50:
-        font_size = 10
-    elif desc_length <= 70:
-        font_size = 10
-    elif desc_length <= 90:
-        font_size = 10
-    else:
         font_size = 9
+    elif desc_length <= 50:
+        font_size = 9
+    elif desc_length <= 70:
+        font_size = 9
+    elif desc_length <= 90:
+        font_size = 9
+    else:
+        font_size = 8
         # Truncate very long descriptions to prevent overflow
         desc = desc[:100] + "..." if len(desc) > 100 else desc
     
