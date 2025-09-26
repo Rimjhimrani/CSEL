@@ -67,7 +67,7 @@ def format_description_v1(desc):
         name='Description_v1',
         fontName='Helvetica',
         fontSize=font_size,
-        alignment=TA_CENTER,
+        alignment=TA_LEFT,
         leading=font_size + 2,
         spaceBefore=1,
         spaceAfter=1
