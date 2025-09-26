@@ -128,7 +128,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
 
         # --- TABLE FOR ROW 1 (Model, Structure, etc.) ---
         data_r1 = [[Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)]]
-        col_widths_r1 = [CONTENT_BOX_WIDTH * 0.25, CONTENT_BOX_WIDTH * 0.30, CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.27]
+        col_widths_r1 = [CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.30, CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.30]
         table_r1 = Table(data_r1, colWidths=col_widths_r1, rowHeights=ROW_HEIGHTS[0])
         # Use 'GRID' to draw all lines for this table
         table_r1.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
