@@ -150,8 +150,8 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         table_r1.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
         # --- TABLE FOR ROW 2 (Part No, Qty/Bin) ---
-        data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nBIN</b>', header_style), Paragraph(qty_bin, value_style)]]
-        col_widths_r2 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.51, CONTENT_BOX_WIDTH * 0.15, CONTENT_BOX_WIDTH * 0.16]
+        data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>CONT.</b>', header_style), Paragraph(qty_bin, value_style)]]
+        col_widths_r2 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.51, CONTENT_BOX_WIDTH * 0.17, CONTENT_BOX_WIDTH * 0.14]
         table_r2 = Table(data_r2, colWidths=col_widths_r2, rowHeights=ROW_HEIGHTS[1])
         table_r2.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
