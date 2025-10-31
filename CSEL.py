@@ -104,7 +104,9 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
     station_no_col = find_column(df, ['STATION NO', 'STATION_NO', 'STATION'])
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
     part_no_col = find_column(df, ['PART NO', 'PARTNO', 'PART_NO', 'PART#'])
-    qty_bin_col = find_column(df, ['QTY/BIN', 'QTY/VEH', 'QTY_VEH', 'QTY'])
+    # --- MODIFICATION START: Updated to search for 'Cont.' first ---
+    qty_bin_col = find_column(df, ['Cont.', 'QTY/BIN', 'QTY/VEH', 'QTY_VEH', 'QTY'])
+    # --- MODIFICATION END ---
     desc_col = find_column(df, ['PART DESC', 'PART_DESCRIPTION', 'DESC', 'DESCRIPTION', 'PART NAME'])
 
     if status_container:
@@ -135,23 +137,23 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         part_desc = str(row.get(desc_col, ""))
         
         # --- TABLE FOR ROW 1 (Model, Structure, etc.) ---
-        # --- MODIFICATION START: Apply the new 'structure_style' to the structure paragraph ---
         data_r1 = [
             [
                 Paragraph(model, bold_centered_value_style), 
-                Paragraph(structure, structure_style),  # Using the new style here
+                Paragraph(structure, structure_style),
                 Paragraph(station_no, bold_centered_value_style), 
                 Paragraph(fixture_location, bold_centered_value_style)
             ]
         ]
-        # --- MODIFICATION END ---
         col_widths_r1 = [CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.30, CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.30]
         table_r1 = Table(data_r1, colWidths=col_widths_r1, rowHeights=ROW_HEIGHTS[0])
         table_r1.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
-        # --- TABLE FOR ROW 2 (Part No, Qty/Bin) ---
-        data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>CONT.</b>', header_style), Paragraph(qty_bin, value_style)]]
-        col_widths_r2 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.51, CONTENT_BOX_WIDTH * 0.17, CONTENT_BOX_WIDTH * 0.14]
+        # --- TABLE FOR ROW 2 (Part No, Cont.) ---
+        # --- MODIFICATION START: Changed 'QTY/BIN' to 'Cont.' ---
+        data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>Cont.</b>', header_style), Paragraph(qty_bin, value_style)]]
+        # --- MODIFICATION END ---
+        col_widths_r2 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.51, CONTENT_BOX_WIDTH * 0.15, CONTENT_BOX_WIDTH * 0.16]
         table_r2 = Table(data_r2, colWidths=col_widths_r2, rowHeights=ROW_HEIGHTS[1])
         table_r2.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
@@ -204,15 +206,17 @@ def main():
     """)
     
     st.subheader("📋 Reference Data Format")
+    # --- MODIFICATION START: Changed 'QTY/BIN' to 'Cont.' in sample data ---
     sample_data = {
         'MODEL': ['3WC', '3WM'],
         'STRUCTURE': ['S-A', 'S-B'],
         'STATION NO': ['STN-1', 'STN-2'],
         'FIXTURE LOCATION': ['9M CSEL', '8L BSEAT'],
         'PART NO': ['08-DRA-14-02', 'P0012124-07'],
-        'QTY/BIN': [2, 1],
+        'Cont.': [2, 1],
         'PART DESCRIPTION': ['BELLOW ASSY. WITH RETAINING CLIP', 'GUARD RING (hirkesh)']
     }
+    # --- MODIFICATION END ---
     st.dataframe(pd.DataFrame(sample_data), use_container_width=True)
     st.markdown("---")
         
