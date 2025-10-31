@@ -38,7 +38,7 @@ value_style = ParagraphStyle(
 bold_value_style = ParagraphStyle(
     name='BoldValue',
     fontName='Helvetica-Bold', # Use bold font
-    fontSize=18,
+    fontSize=15,
     alignment=TA_CENTER,
     leading=19
 )
