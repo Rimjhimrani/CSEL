@@ -151,7 +151,7 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
 
         # --- TABLE FOR ROW 2 (Part No, Cont.) ---
         # --- MODIFICATION START: Changed 'QTY/BIN' to 'Cont.' ---
-        data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>Cont.</b>', header_style), Paragraph(qty_bin, value_style)]]
+        data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>CONT.</b>', header_style), Paragraph(qty_bin, value_style)]]
         # --- MODIFICATION END ---
         col_widths_r2 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.51, CONTENT_BOX_WIDTH * 0.15, CONTENT_BOX_WIDTH * 0.16]
         table_r2 = Table(data_r2, colWidths=col_widths_r2, rowHeights=ROW_HEIGHTS[1])
