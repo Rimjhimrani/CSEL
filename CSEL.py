@@ -45,10 +45,21 @@ bold_value_style = ParagraphStyle(
 bold_centered_value_style = ParagraphStyle(
     name='BoldCenteredValue',
     fontName='Helvetica-Bold',
-    fontSize=14,
+    fontSize=16,
     alignment=TA_CENTER,
     leading=20
 )
+
+# --- MODIFICATION START: Added a specific style for the STRUCTURE column ---
+structure_style = ParagraphStyle(
+    name='StructureStyle',
+    fontName='Helvetica-Bold',
+    fontSize=11,  # Specific font size for Structure
+    alignment=TA_CENTER,
+    leading=13
+)
+# --- MODIFICATION END ---
+
 
 def format_description_v1(desc):
     """Format description text with dynamic font sizing and alignment."""
@@ -93,14 +104,11 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
     station_no_col = find_column(df, ['STATION NO', 'STATION_NO', 'STATION'])
     fixture_location_col = find_column(df, ['FIXTURE LOCATION', 'FIXTURE_LOCATION', 'LOCATION'])
     part_no_col = find_column(df, ['PART NO', 'PARTNO', 'PART_NO', 'PART#'])
-    # --- MODIFICATION START: Updated keywords for quantity column ---
     qty_bin_col = find_column(df, ['QTY/BIN', 'QTY/VEH', 'QTY_VEH', 'QTY'])
-    # --- MODIFICATION END ---
     desc_col = find_column(df, ['PART DESC', 'PART_DESCRIPTION', 'DESC', 'DESCRIPTION', 'PART NAME'])
 
     if status_container:
         status_container.write("**Attempting to map columns from your file...**")
-        # (Status messages remain the same)
 
     # Setup PDF document
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
@@ -123,21 +131,26 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
         station_no = str(row.get(station_no_col, ""))
         fixture_location = str(row.get(fixture_location_col, ""))
         part_no = str(row.get(part_no_col, ""))
-        # --- MODIFICATION START: Use the newly identified quantity column ---
         qty_bin = str(row.get(qty_bin_col, ""))
-        # --- MODIFICATION END ---
         part_desc = str(row.get(desc_col, ""))
         
         # --- TABLE FOR ROW 1 (Model, Structure, etc.) ---
-        data_r1 = [[Paragraph(model, bold_centered_value_style), Paragraph(structure, bold_centered_value_style), Paragraph(station_no, bold_centered_value_style), Paragraph(fixture_location, bold_centered_value_style)]]
+        # --- MODIFICATION START: Apply the new 'structure_style' to the structure paragraph ---
+        data_r1 = [
+            [
+                Paragraph(model, bold_centered_value_style), 
+                Paragraph(structure, structure_style),  # Using the new style here
+                Paragraph(station_no, bold_centered_value_style), 
+                Paragraph(fixture_location, bold_centered_value_style)
+            ]
+        ]
+        # --- MODIFICATION END ---
         col_widths_r1 = [CONTENT_BOX_WIDTH * 0.22, CONTENT_BOX_WIDTH * 0.30, CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.30]
         table_r1 = Table(data_r1, colWidths=col_widths_r1, rowHeights=ROW_HEIGHTS[0])
         table_r1.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
 
         # --- TABLE FOR ROW 2 (Part No, Qty/Bin) ---
-        # --- MODIFICATION START: Updated label text and variable ---
         data_r2 = [[Paragraph('<b>PART NO</b>', header_style), Paragraph(part_no, bold_value_style), Paragraph('<b>QTY/\nBIN</b>', header_style), Paragraph(qty_bin, value_style)]]
-        # --- MODIFICATION END ---
         col_widths_r2 = [CONTENT_BOX_WIDTH * 0.18, CONTENT_BOX_WIDTH * 0.51, CONTENT_BOX_WIDTH * 0.15, CONTENT_BOX_WIDTH * 0.16]
         table_r2 = Table(data_r2, colWidths=col_widths_r2, rowHeights=ROW_HEIGHTS[1])
         table_r2.setStyle(TableStyle([('GRID', (0, 0), (-1, -1), 1, colors.black), ('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
@@ -191,7 +204,6 @@ def main():
     """)
     
     st.subheader("📋 Reference Data Format")
-    # --- MODIFICATION START: Updated sample data to use QTY/BIN ---
     sample_data = {
         'MODEL': ['3WC', '3WM'],
         'STRUCTURE': ['S-A', 'S-B'],
@@ -201,7 +213,6 @@ def main():
         'QTY/BIN': [2, 1],
         'PART DESCRIPTION': ['BELLOW ASSY. WITH RETAINING CLIP', 'GUARD RING (hirkesh)']
     }
-    # --- MODIFICATION END ---
     st.dataframe(pd.DataFrame(sample_data), use_container_width=True)
     st.markdown("---")
         
