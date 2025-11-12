@@ -62,7 +62,7 @@ structure_style = ParagraphStyle(
 station_no_style = ParagraphStyle(
     name='StationNoStyle',
     fontName='Helvetica-Bold',
-    fontSize=12,  # Custom font size for Station No
+    fontSize=10,  # Custom font size for Station No
     alignment=TA_CENTER,
     leading=16
 )
@@ -77,9 +77,9 @@ def format_description_v1(desc):
     desc_length = len(desc)
     
     if desc_length <= 90:
-        font_size = 9
+        font_size = 12
     else:
-        font_size = 8
+        font_size = 9
         desc = desc[:100] + "..." if len(desc) > 100 else desc
     
     desc_style_v1 = ParagraphStyle(
