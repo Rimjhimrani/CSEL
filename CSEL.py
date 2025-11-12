@@ -84,7 +84,7 @@ def format_description_v1(desc):
     
     desc_style_v1 = ParagraphStyle(
         name='Description_v1',
-        fontName='Helvetica',
+        fontName='Helvetica-Bold',
         fontSize=font_size,
         alignment=TA_LEFT,
         leading=font_size + 2,
