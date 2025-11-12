@@ -77,7 +77,7 @@ def format_description_v1(desc):
     desc_length = len(desc)
     
     if desc_length <= 90:
-        font_size = 12
+        font_size = 11
     else:
         font_size = 9
         desc = desc[:100] + "..." if len(desc) > 100 else desc
