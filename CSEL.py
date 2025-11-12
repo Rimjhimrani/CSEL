@@ -11,33 +11,6 @@ import sys
 import subprocess
 import tempfile
 
-# --- MODIFICATION START: Register the Arial font ---
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-import traceback
-
-try:
-    # Register the Arial font. The .ttf file must be in the same directory as the script
-    # or you must provide the full path to it.
-    pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
-    pdfmetrics.registerFont(TTFont('Arial-Bold', 'arialbd.ttf')) # Optional: for bold version
-    
-    # You can also register italic and bold-italic if needed
-    # pdfmetrics.registerFont(TTFont('Arial-Italic', 'ariali.ttf'))
-    # pdfmetrics.registerFont(TTFont('Arial-BoldItalic', 'arialbi.ttf'))
-
-    # Register a font family to easily switch between styles
-    # pdfmetrics.registerFontFamily('Arial', normal='Arial', bold='Arial-Bold', italic='Arial-Italic', boldItalic='Arial-BoldItalic')
-
-except Exception:
-    # This block is to prevent the app from crashing if the font file is not found.
-    # You will see a warning on the Streamlit page instead.
-    font_registration_error = traceback.format_exc()
-else:
-    font_registration_error = None
-# --- MODIFICATION END ---
-
-
 # --- MANUAL ROW HEIGHT ADJUSTMENT ---
 ROW_HEIGHTS = [1.6*cm, 1.6*cm, 1.8*cm]
 
@@ -85,6 +58,7 @@ structure_style = ParagraphStyle(
     leading=13
 )
 
+# --- MODIFICATION START: Added a specific style for the STATION NO value ---
 station_no_style = ParagraphStyle(
     name='StationNoStyle',
     fontName='Helvetica-Bold',
@@ -92,6 +66,8 @@ station_no_style = ParagraphStyle(
     alignment=TA_CENTER,
     leading=16
 )
+# --- MODIFICATION END ---
+
 
 def format_description_v1(desc):
     """Format description text with dynamic font sizing and alignment."""
@@ -108,9 +84,7 @@ def format_description_v1(desc):
     
     desc_style_v1 = ParagraphStyle(
         name='Description_v1',
-        # --- MODIFICATION START: Changed font from Helvetica to Arial ---
-        fontName='Arial' if not font_registration_error else 'Helvetica', # Use Arial, fallback to Helvetica if font file is missing
-        # --- MODIFICATION END ---
+        fontName='Helvetica',
         fontSize=font_size,
         alignment=TA_LEFT,
         leading=font_size + 2,
@@ -173,7 +147,9 @@ def generate_final_labels(df, progress_bar=None, status_container=None):
             [
                 Paragraph(model, bold_centered_value_style), 
                 Paragraph(structure, structure_style),
+                # --- MODIFICATION START: Applied the new station_no_style ---
                 Paragraph(station_no, station_no_style), 
+                # --- MODIFICATION END ---
                 Paragraph(fixture_location, bold_centered_value_style)
             ]
         ]
@@ -227,18 +203,6 @@ def main():
         unsafe_allow_html=True
     )
     st.markdown("---")
-    
-    # --- MODIFICATION START: Add a warning if font file is not found ---
-    if font_registration_error:
-        st.warning(
-            "**Arial Font Not Found!**\n\n"
-            "The label generator will fall back to the default Helvetica font for the part description. "
-            "To use Arial, please make sure the `arial.ttf` file is in the same directory as your script."
-        )
-        with st.expander("See technical details"):
-            st.code(font_registration_error)
-    # --- MODIFICATION END ---
-
 
     st.info("""
     **Label Logic:**
